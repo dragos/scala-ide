@@ -1,4 +1,4 @@
-package org.scalaide.api
+package org.scalaide.api.model
 
 /** Term and type names in Scala programs.
  * 
@@ -15,9 +15,7 @@ package org.scalaide.api
 trait Names {
 
   type Name <: AnyRef
-
   type TermName <: Name
-
   type TypeName <: Name
 
   /** Create a new term name.   */
@@ -27,6 +25,17 @@ trait Names {
   def newTypeName(s: String): TypeName
 
   def EmptyTermName: TermName = newTermName("")
-
   def EmptyTypeName: TypeName = newTypeName("")
+
+  trait NameOps {
+    val self: Name
+    
+    /** Is the given name a term name? */
+    def isTermName: Boolean
+
+    /** Is the given name a type name? */
+    def isTypeName: Boolean
+  }
+
+  implicit def toNameOps(nme: Name): NameOps
 }

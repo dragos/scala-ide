@@ -1,4 +1,4 @@
-package org.scalaide.api
+package org.scalaide.api.model
 
 import collection.{ immutable, mutable }
 
