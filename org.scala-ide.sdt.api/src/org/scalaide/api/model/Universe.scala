@@ -1,11 +1,11 @@
 package org.scalaide.api.model
 
-trait Universe extends Names
+/**
+ * The equivalent of Universe in the Scala compiler.
+ */
+trait Universe extends CompilerTypes
   with Symbols
   with Types
-  with Trees
-  with AnnotationInfos 
-  with Constants
-  with Positions
-  with StandardDefinitions
-  with Scopes
+  with reflect.api.TreePrinters
+  with reflect.api.Trees
+  with AnnotationInfos

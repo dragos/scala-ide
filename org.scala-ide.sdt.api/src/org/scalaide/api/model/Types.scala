@@ -1,10 +1,15 @@
 package org.scalaide.api.model
 
-trait Types { self: Universe =>
+import scala.reflect.api.PresentationTypes
 
+trait Types extends PresentationTypes { self: Universe =>
+
+  /** Add operations to a compiler Type. */
+  implicit def toTypeOps(tpe: Type): TypeOps
+  
   /** This class declares operations that are visible in a Type.
    */
-  abstract class AbsType {
+  abstract class TypeOps {
     /** The type symbol associated with the type, or `NoSymbol` for types
      *  that do not refer to a type symbol.
      */
@@ -145,8 +150,9 @@ trait Types { self: Universe =>
   /** The type of Scala types, and also Scala type signatures.
    *  (No difference is internally made between the two).
    */
-  type Type >: Null <: AbsType
+  type Type >: Null <: AnyRef
 
+/*
   /** The type of Scala singleton types, i.e. types that are inhabited
    *  by only one nun-null value. These include types of the forms
    *  {{{
@@ -157,16 +163,6 @@ trait Types { self: Universe =>
    *  as well as constant types.
    */
   type SingletonType >: Null <: Type
-
-  /** This constant is used as a special value that indicates that no meaningful type exists.
-   */
-  val NoType: Type
-
-  /** This constant is used as a special value denoting the empty prefix in a path dependent type.
-   *  For instance `x.type` is represented as `SingleType(NoPrefix, <x>)`, where `<x>` stands for
-   *  the symbol for `x`.
-   */
-  val NoPrefix: Type
 
   /** The `ThisType` type describes types of the form on the left with the
    *  correspnding ThisType representations to the right.
@@ -412,7 +408,7 @@ trait Types { self: Universe =>
     def apply(annotations: List[AnnotationInfo], underlying: Type, selfsym: Symbol): AnnotatedType
     def unapply(tpe: AnnotatedType): Option[(List[AnnotationInfo], Type, Symbol)]
   }
-
+*/
   /** The least upper bound wrt <:< of a list of types */
   def lub(xs: List[Type]): Type
 

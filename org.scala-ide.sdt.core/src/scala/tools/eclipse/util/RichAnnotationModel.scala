@@ -21,6 +21,7 @@ class RichAnnotationModel(annotationModel: IAnnotationModel) {
     case synchronizable: ISynchronizable =>
       synchronizable.getLockObject.synchronized { f }
     case _ => 
+      // TODO: Is this safe? Should we have a default lock then?
       f
   }
   
