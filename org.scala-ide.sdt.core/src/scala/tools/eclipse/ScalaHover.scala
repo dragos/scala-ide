@@ -24,7 +24,7 @@ class ScalaHover(codeAssist : () => Option[ICodeAssist]) extends ITextHover {
         scu.withSourceFile ({ (src, compiler) =>
           import compiler._
           
-          def hoverInfo(t: Tree): Option[String] = askOption { () =>
+          def hoverInfo(t: Tree): Option[String] = askOption {
             def compose(ss: List[String]): String = ss.filter("" !=).mkString("", " ", "")
             def defString(sym: Symbol, tpe: Type): String = {
               // NoType is returned for defining occurrences, in this case we want to display symbol info itself.

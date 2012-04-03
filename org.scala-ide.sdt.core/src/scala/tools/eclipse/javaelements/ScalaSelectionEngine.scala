@@ -175,7 +175,7 @@ class ScalaSelectionEngine(nameEnvironment: SearchableEnvironment, requestor: Sc
       val typed = new compiler.Response[compiler.Tree]
       compiler.askTypeAt(pos, typed)
       val typedRes = typed.get
-      val cont: Cont = compiler.askOption { () =>
+      val cont: Cont = compiler.askOption {
         typedRes.left.toOption match {
           case Some(tree) => {
             tree match {

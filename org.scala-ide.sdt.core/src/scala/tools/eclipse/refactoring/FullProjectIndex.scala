@@ -169,7 +169,7 @@ trait FullProjectIndex extends HasLogger {
       trees flatMap { tree =>
         
         project.withPresentationCompiler { compiler =>
-          compiler.askOption { () =>
+          compiler.askOption {
             refactoring.CompilationUnitIndex(tree)
           }
         }()

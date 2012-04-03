@@ -14,7 +14,7 @@ class ScalaOccurrencesFinder(file: ScalaCompilationUnit, offset: Int, length: In
   def findOccurrences(): Option[Occurrences] = {
     val (from, to) = (offset, offset + length)
     file.withSourceFile { (sourceFile, compiler) =>
-      compiler.askOption { () =>
+      compiler.askOption {
         val mo = new MarkOccurrences with GlobalIndexes {
           val global = compiler
           lazy val index = GlobalIndex(global.body(sourceFile))

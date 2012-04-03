@@ -50,7 +50,7 @@ trait JavaSig { pc: ScalaPresentationCompiler =>
 
     private lazy val sig: Option[String] = {
       // make sure to execute this call in the presentation compiler's thread
-      pc.askOption { () =>
+      pc.askOption {
         def needsJavaSig: Boolean = {
           // there is no need to generate the generic type information for local symbols
           !symbol.isLocal && erasure.needsJavaSig(symbol.info)

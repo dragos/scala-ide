@@ -127,8 +127,8 @@ class ScalaPresentationCompiler(project : ScalaProject, settings : Settings)
    *  None if an exception occured. TypeError and FreshRunReq are printed to
    *  stdout, all the others are logged in the platform error log.
    */
-  def askOption[A](op: () => A): Option[A] =
-    try Some(ask(op))
+  def askOption[A](op: => A): Option[A] =
+    try Some(ask(() => op))
     catch {
       case fi: FailedInterrupt =>
         fi.getCause() match {

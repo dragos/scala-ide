@@ -33,7 +33,7 @@ private[hyperlink] class ScalaDeclarationHyperlinkComputer extends HasLogger {
         val typed = response.get
 
         logger.info("detectHyperlinks: wordRegion = " + wordRegion)
-        compiler.askOption { () =>
+        compiler.askOption {
           typed.left.toOption map {
             case Import(expr, sels) =>
               if (expr.pos.includes(pos)) {

@@ -75,7 +75,7 @@ abstract class ScalaIdeRefactoring(val getName: String, val file: ScalaSourceFil
     val sel = selection()
     
     withCompiler{ compiler => 
-      compiler.askOption { () =>
+      compiler.askOption {
         refactoring.prepare(sel)
       } getOrElse fail()
     }
@@ -154,7 +154,7 @@ abstract class ScalaIdeRefactoring(val getName: String, val file: ScalaSourceFil
     val sel = selection()
     
     val result = withCompiler { compiler =>
-      compiler.askOption {() =>
+      compiler.askOption {
         refactoring.perform(sel, preparationResult().right.get, params)
       }
     }

@@ -53,7 +53,7 @@ case class ImportCompletionProposal(val importName: String) extends IJavaComplet
              eclipseLog.error(error)
              None
            case _ =>
-             compiler.askOption {() =>
+             compiler.askOption {
                val refactoring = new AddImportStatement { val global = compiler }
                refactoring.addImport(scalaSourceFile.file, importName)
              }

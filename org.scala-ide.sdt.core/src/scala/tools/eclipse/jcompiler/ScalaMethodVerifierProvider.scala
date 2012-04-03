@@ -91,7 +91,7 @@ class ScalaMethodVerifierProvider extends IMethodVerifierProvider with HasLogger
 
   private def isConcreteTraitMethod(abstractMethod: MethodBinding, project: ScalaProject): Boolean = {
     project.withPresentationCompiler { pc =>
-      pc.askOption { () =>
+      pc.askOption {
         import pc._
         /** Find the method's symbol for the given `abstractMethod` definition. */
         def findMethodSymbol(methodOwner: Symbol, abstractMethod: MethodBinding): Option[Symbol] = {

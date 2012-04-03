@@ -26,7 +26,7 @@ trait SymbolTests { self: SymbolClassification =>
   private def classifyTerm(sym: Symbol): SymbolType = {
     
     lazy val isCaseModule = 
-      global.askOption( () => sym.companionClass.isCaseClass).getOrElse(false)
+      global.askOption(sym.companionClass.isCaseClass).getOrElse(false)
     
     import sym._
     if (isPackage)

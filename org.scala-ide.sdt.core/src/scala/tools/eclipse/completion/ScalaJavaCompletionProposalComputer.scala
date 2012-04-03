@@ -119,7 +119,7 @@ class ScalaJavaCompletionProposalComputer extends IJavaCompletionProposalCompute
           !sym.isConstructor &&
           !sym.isPrivate)
 
-      compiler.askOption { () =>
+      compiler.askOption {
         val currentClass = definitions.getClass(newTypeName(referencedTypeName))
         val proposals = currentClass.info.members.filter(mixedInMethod)
 

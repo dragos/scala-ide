@@ -105,7 +105,7 @@ class SymbolClassification(protected val sourceFile: SourceFile, val global: Sca
   private def getSymbolInfo(sym: Symbol, poss: List[Position]): SymbolInfo = {
     val regions = poss.flatMap(getOccurrenceRegion(sym)).toList
     // isDeprecated may trigger type completion for annotations
-    val deprecated = sym.annotations.nonEmpty && global.askOption(() => sym.isDeprecated).getOrElse(false)
+    val deprecated = sym.annotations.nonEmpty && global.askOption(sym.isDeprecated).getOrElse(false)
     SymbolInfo(getSymbolType(sym), regions, deprecated)
   }
 

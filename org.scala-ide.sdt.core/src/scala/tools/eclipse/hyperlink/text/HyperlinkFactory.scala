@@ -32,7 +32,7 @@ abstract class HyperlinkFactory {
   protected val global: ScalaPresentationCompiler
 
   def create(createHyperlink: Hyperlink.Factory, scu: ScalaCompilationUnit, sym: global.Symbol, region: IRegion): Option[IHyperlink] = {
-    global.askOption { () =>
+    global.askOption {
       global.locate(sym, scu) map {
         case (f, pos) =>
           val text = sym.kindString + " " + sym.fullName

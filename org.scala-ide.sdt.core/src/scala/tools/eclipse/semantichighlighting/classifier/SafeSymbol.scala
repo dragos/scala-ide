@@ -53,7 +53,7 @@ trait SafeSymbol extends CompilerAccess with PimpedTrees {
       // symbol, which may trigger type checking of the underlying tree, so we
       // wrap it in 'ask'
       if (originalSym.isEmpty) {
-        val tpeSym = global.askOption(() => Option(t.symbol)).flatten.toList
+        val tpeSym = global.askOption(Option(t.symbol)).flatten.toList
         tpeSym.zip(List(tpeTree.namePosition))
       } else originalSym
 
@@ -64,7 +64,7 @@ trait SafeSymbol extends CompilerAccess with PimpedTrees {
         // with real positions, instead of just an Int
         val pos = rangePos(sourceFile, namePos, namePos, namePos + name.length)
 
-        val sym1 = if (expr.tpe ne null) global.askOption { () =>
+        val sym1 = if (expr.tpe ne null) global.askOption {
           val typeSym = expr.tpe.member(name.toTypeName)
           if (typeSym.exists) typeSym
           else expr.tpe.member(name.toTermName)
