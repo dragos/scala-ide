@@ -1,16 +1,16 @@
 package org.scalaide.api.model
 
-import scala.reflect.api.PresentationSymbols
+import scala.tools.nsc.interactive.Compatibility.PresentationSymbols
+import scala.tools.nsc.interactive.Compatibility
 
-trait Symbols extends PresentationSymbols { self: reflect.api.Names with Types with AnnotationInfos =>
+trait Symbols extends PresentationSymbols { self: Compatibility.Names with Types with AnnotationInfos =>
 
   /** Symbols are completely abstracted away in the Scala model API. All operations
    *  on symbols are performed through `SymbolOps`, whose implementation takes care of
    *  maintaining compiler invariants.
+   *  
+   *  Add operations to symbols. 
    */
-  type Symbol >: Null <: PresentationSymbol
-
-  /** Add operations to symbols. */
   implicit def toSymbolOps(sym: Symbol): SymbolOps
 
   abstract class SymbolOps(symbol: Symbol) {

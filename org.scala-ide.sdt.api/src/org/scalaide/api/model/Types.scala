@@ -1,6 +1,6 @@
 package org.scalaide.api.model
 
-import scala.reflect.api.PresentationTypes
+import scala.tools.nsc.interactive.Compatibility.PresentationTypes
 
 trait Types extends PresentationTypes { self: Universe =>
 
@@ -78,37 +78,10 @@ trait Types extends PresentationTypes { self: Universe =>
      */
     def baseClasses: List[Symbol]   // !!! Alternative name, perhaps linearization?
 
-    /** The least type instance of given class which is a supertype
-     *  of this type.  Example:
-     *  {{{
-     *    class D[T]
-     *    class C extends p.D[Int]
-     *    ThisType(C).baseType(D) = p.D[Int]
-     * }}}
-     */
-    def baseType(clazz: Symbol): Type
-
-    /** This type as seen from prefix `pre` and class `clazz`. This means:
-     *  Replace all thistypes of `clazz` or one of its subclasses
-     *  by `pre` and instantiate all parameters by arguments of `pre`.
-     *  Proceed analogously for thistypes referring to outer classes.
-     *
-     *  Example:
-     *    class D[T] { def m: T }
-     *    class C extends p.D[Int]
-     *    T.asSeenFrom(ThisType(C), D)  (where D is owner of m)
-     *      = Int
-     */
-    def asSeenFrom(pre: Type, clazz: Symbol): Type
-
     /** The erased type corresponding to this type after
      *  all transformations from Scala to Java have been performed.
      */
     def erasedType: Type    // !!! "erasedType", compare with "widen" (so "erase") or "underlying" (so "erased")
-
-   /** Apply `f` to each part of this type, returning
-    *  a new type. children get mapped before their parents */
-    def map(f: Type => Type): Type
 
     /** Apply `f` to each part of this type, for side effects only */
     def foreach(f: Type => Unit)

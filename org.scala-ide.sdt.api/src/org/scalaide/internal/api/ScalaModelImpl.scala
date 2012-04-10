@@ -1,128 +1,105 @@
 package org.scalaide.internal.api
 
-import org.scalaide.api.model.Universe
+import org.scalaide.api.model._
 import scala.tools.eclipse.ScalaPresentationCompiler
+import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+import scala.tools.nsc.util.SourceFile
 
-trait ScalaModelImpl extends Universe { self: ScalaPresentationCompiler =>
+trait ScalaModelImpl extends ScalaModel { self: Universe with ScalaPresentationCompiler =>
 
-  type Symbol = self.Symbol
+  private val TIMEOUT = 5000
 
-  def askOption[A](op: => A): Option[A] =
-    askOption(() => op)
+  private def ??? = sys.error("not implemented yet")
 
-  private class RichSymbol(symbol: Symbol) extends SymbolOps(symbol) {
+  def withSource[A](scu: ScalaCompilationUnit)(op: SourceFile => A): A =
+    self.withSourceFile(scu)((srcFile, compiler) => op(srcFile))
 
-    def annotations: List[self.AnnotationInfo] =
-      symbol.annotations
+  /** Reload the given compilation unit. If this CU is not tracked by the presentation
+   *  compiler, it will from now on. Each type-checking pass will consider this source
+   *  as well.
+   */
+  def askReload(sources: ScalaCompilationUnit*): Unit =
+    sources foreach { scu => self.askReload(scu, scu.getContents) }
 
-    def hasAnnotation(cls: Symbol): Boolean =
-      (symbol.annotations.nonEmpty
-        && askOption(symbol.hasAnnotation(cls)).getOrElse(false)) // annotations are lazily type checked
+  /** Locate smallest tree that encloses position
+   *  @pre Position must be loaded
+   */
+  def locateTree(pos: Position): Tree = self.locateTree(pos)
 
-    def privateWithin: Symbol =
-      symbol.privateWithin
+  /** Locate smallest tree that encloses position.
+   *
+   *  Returns `EmptyTree` if the position could not be found.
+   */
+  def locateIn(tree: Tree, pos: Position, p: Tree => Boolean = t => true): Tree =
+    new FilteringLocator(pos, p) locateIn tree
 
-    def companionSymbol: Symbol =
-      if (symbol == NoSymbol)
-        NoSymbol
-      else
-        askOption(symbol.companionSymbol).getOrElse(NoSymbol)
+  class FilteringLocator(pos: Position, p: Tree => Boolean) extends Locator(pos) {
+    override def isEligible(t: Tree) = super.isEligible(t) && p(t)
+  }
 
-    def typeSignature: Type =
-      askOption(symbol.typeSignature).getOrElse(NoType)
+  /** Return the AST of the given compilation unit. The operation may be long-running
+   *  if you ask for the fully typed tree.
+   */
+  def fullTreeOf(scu: ScalaCompilationUnit, ast: AstKind.Value = AstKind.Parsed): Either[Tree, Throwable] = {
+    val response = new Response[Tree]
 
-    def typeSignatureIn(site: Type): Type =
-      askOption(symbol.typeSignatureIn(site)).getOrElse(NoType)
-
-    def asTypeIn(site: Type): Type =
-      askOption(symbol.asTypeIn(site)).getOrElse(NoType)
-
-    def asTypeConstructor: Type =
-      if (symbol.isType)
-        askOption(symbol.asTypeConstructor).getOrElse(NoType)
-      else
-        NoType // fail fast, no need to forward to the presentation compiler in this case 
-
-    def thisPrefix: Type =
-      if (symbol.isClass) askOption(symbol.thisPrefix).getOrElse(NoPrefix) else NoPrefix
-
-    def selfType: Type =
-      askOption(symbol.selfType).getOrElse(NoType)
-
-    // tests
-    def isBottomClass: Boolean = symbol.isBottomClass
-
-    /** Is this symbol a type but not a class? */
-    def isNonClassType: Boolean = symbol.isNonClassType
-
-    def isTrait: Boolean = {
-      ensureInitialized()
-      symbol.isTrait
-    }
-
-    def isAbstractClass: Boolean = {
-      ensureInitialized()
-      symbol.isAbstractClass
-    }
-    
-    def isBridge: Boolean = symbol.isBridge
-    
-    def isContravariant: Boolean = symbol.isContravariant
-
-    def isCovariant: Boolean = symbol.isCovariant
-      
-    def isConcreteClass: Boolean = {
-      ensureInitialized()
-      symbol.isConcreteClass
-    }
-      
-    def isEarlyInitialized: Boolean = symbol.isEarlyInitialized
-      
-    def isExistentiallyBound: Boolean = symbol.isExistentiallyBound
-      
-    def isMethod: Boolean = symbol.isMethod
-      
-    def isModule: Boolean = {
-      ensureInitialized()
-      symbol.isModule
-    }
-      
-    def isModuleClass: Boolean = {
-      ensureInitialized()
-      symbol.isModuleClass
-    }
-    
-    def isNumericValueClass: Boolean = symbol.isNumericValueClass
-    
-    def isOverloaded: Boolean = symbol.isOverloaded
-
-    def isRefinementClass: Boolean = symbol.isRefinementClass
-
-    def isSourceMethod: Boolean = symbol.isSourceMethod
-
-    def isTypeParameter: Boolean = symbol.isTypeParameter
-    
-    def isPrimitiveValueClass: Boolean = symbol.isPrimitiveValueClass
-    
-    def isVarargsMethod: Boolean = symbol.isVarargsMethod
-
-    /** Package tests */
-    def isEmptyPackage: Boolean       = symbol.isEmptyPackage
-    def isEmptyPackageClass: Boolean  = symbol.isEmptyPackageClass
-    def isPackage: Boolean            = symbol.isPackage
-    def isPackageClass: Boolean       = symbol.isPackageClass
-    def isRoot: Boolean               = symbol.isRoot
-    def isRootPackage: Boolean        = symbol.isRootPackage
-
-    /** Ensure the symbol has been initialized. If not, call '.initialize' on the
-     *  presentation compiler thread. Avoid unnecessarily calling the PC, as that can
-     *  saturate the working queue if done too often.
-     */
-    private def ensureInitialized() {
-      if (!symbol.isInitialized)
-        askOption(symbol.initialize)
+    ast match {
+      case AstKind.Parsed => Left(withSource(scu)(self.parseTree))
+      case AstKind.Typed =>
+        withSource(scu) { self.askLoadedTyped(_, response) }
+        response.get
+      case AstKind.Named =>
+        withSource(scu) { src => self.askStructure(false)(src, response) }
+        response.get
     }
   }
-  
-  implicit def toSymbolOps(sym: Symbol): SymbolOps = new RichSymbol(sym)
+
+  /** Return the innermost enclosing tree for the given position.
+   *
+   *  @return A left-biased instance of Either. Exceptions are returned in the `Right` part.
+   */
+  def treeAt(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[Tree, Throwable] = {
+    val response = new Response[Tree]
+
+    ast match {
+      case AstKind.Parsed =>
+        val tree = self.parseTree(pos.source)
+        Left(locateIn(tree, pos))
+
+      case AstKind.Named | AstKind.Typed =>
+        self.askTypeAt(pos, response)
+        response.get
+    }
+  }
+
+  /** Return the innermost enclosing class for the given position.
+   *
+   *  @return A left-biased instance of Either. Exceptions are returned in the `Right` part.
+   */
+  def enclosingClass(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[ClassDef, Throwable] = {
+    val eitherCdef = locateIn(parseTree(pos.source), pos, _.isInstanceOf[ClassDef]) match {
+      case c: ClassDef => Left(c)
+      case EmptyTree   => Right(PositionNotFound(pos))
+    }
+
+    ast match {
+      case AstKind.Parsed => eitherCdef
+      case AstKind.Named | AstKind.Typed =>
+        val response = new Response[Tree]
+        eitherCdef.left.map(cdef => self.askTypeAt(cdef.pos, response))
+        response.get.left.map(_.asInstanceOf[ClassDef])
+    }
+  }
+
+  /** Return the innermost enclosing method definition for the given position.
+   *
+   *  @return A right-biased instance of Either. Exceptions are returned in the 'left' part.
+   */
+  def enclosingMethod(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[DefDef, Throwable] = ???
+
+  /** Return the top-level enclosing class for the given position.
+   *
+   *  @return A right-biased instance of Either. Exceptions are returned in the 'left' part.
+   */
+  def topLevelClass(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[ClassDef, Throwable] = ???
 }

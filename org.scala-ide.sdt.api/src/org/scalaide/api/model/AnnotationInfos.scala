@@ -3,44 +3,24 @@ package org.scalaide.api.model
 trait AnnotationInfos { self: Universe =>
 
   type AnnotationInfo <: AnyRef
-  val AnnotationInfo: AnnotationInfoExtractor
 
-  abstract class AnnotationInfoExtractor {
-    def apply(atp: Type, args: List[Tree], assocs: List[(Name, ClassfileAnnotArg)]): AnnotationInfo
-    def unapply(info: AnnotationInfo): Option[(Type, List[Tree], List[(Name, ClassfileAnnotArg)])]
-  }
-  
-  abstract class AnnotationOps(ann: AnnotationInfo) {
+  abstract class AnnotationOps {
+    
+    /** The type of this annotation. */
     def annotationType: Type
+    
+    /** The arguments of this annotation. */
     def args: List[Tree]
+    
+    /** The position of this annotation. */
+    def pos: Position
+    
+    /** The symbol corresponding to this annotation. */
+    def symbol: Symbol
+    
+    /** The original tree from which this annotation info was computed. */
+    def original: Tree
   }
   
   implicit def annotationOps(ann: AnnotationInfo): AnnotationOps
-
-  type ClassfileAnnotArg <: AnyRef
-  implicit def classfileAnnotArgManifest: ClassManifest[ClassfileAnnotArg] // need a precise manifest to pass to UnPickle's toArray call
-
-  type LiteralAnnotArg <: ClassfileAnnotArg
-  val LiteralAnnotArg: LiteralAnnotArgExtractor
-
-  type ArrayAnnotArg <: ClassfileAnnotArg
-  val ArrayAnnotArg: ArrayAnnotArgExtractor
-
-  type NestedAnnotArg <: ClassfileAnnotArg
-  val NestedAnnotArg: NestedAnnotArgExtractor
-
-  abstract class LiteralAnnotArgExtractor {
-    def apply(const: Constant): LiteralAnnotArg
-    def unapply(arg: LiteralAnnotArg): Option[Constant]
-  }
-
-  abstract class ArrayAnnotArgExtractor {
-    def apply(const: Array[ClassfileAnnotArg]): ArrayAnnotArg
-    def unapply(arg: ArrayAnnotArg): Option[Array[ClassfileAnnotArg]]
-  }
-
-  abstract class NestedAnnotArgExtractor {
-    def apply(anninfo: AnnotationInfo): NestedAnnotArg
-    def unapply(arg: NestedAnnotArg): Option[AnnotationInfo]
-  }
 }

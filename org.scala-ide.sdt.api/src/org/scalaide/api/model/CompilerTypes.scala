@@ -1,14 +1,14 @@
 package org.scalaide.api.model
 
-import scala.reflect.api.PresentationSymbols
-import scala.reflect.api.PresentationTypes
-import scala.reflect.api.PresentationStandardDefinitions
+import scala.tools.nsc.interactive.Compatibility
 
-trait CompilerTypes extends reflect.api.Positions
-  with PresentationSymbols
-  with PresentationTypes
-  with reflect.api.Names 
-  with reflect.api.StandardNames
-  with reflect.api.Constants
-  with reflect.api.Scopes // used by Type extractors
-  with PresentationStandardDefinitions
+trait CompilerTypes extends Compatibility.Positions
+  with Compatibility.PresentationSymbols
+  with Compatibility.PresentationTypes
+  with Compatibility.Names
+  with Compatibility.StandardNames
+  with Compatibility.Constants
+  with Compatibility.Scopes // used by Type extractors
+  with Compatibility.PresentationStandardDefinitions
+  with Compatibility.TreePrinters
+  with Compatibility.Trees
