@@ -1,15 +1,15 @@
 package org.scalaide.internal.api
 
-import scala.tools.eclipse.ScalaPresentationCompiler
 import org.scalaide.api.model.Types
-import org.scalaide.api.model.Universe
+import org.scalaide.api.model.CompilerServices
+import scala.tools.nsc.interactive.Global
 
 /** The type implementation. Types are fully abstract in the
  *  public interface, and methods are added through an implicit
  *  conversion. The conversion takes care of wrapping non-thread
  *  safe operations in calls to 'ask'.
  */
-trait TypeImpl extends Universe { self: ScalaPresentationCompiler =>
+trait TypeImpl extends CompilerServices { self: SdtCorePresentationCompiler with Global =>
 
   type Type = self.Type
 

@@ -1,6 +1,6 @@
 package org.scalaide.api.model
 
-trait AnnotationInfos { self: Universe =>
+trait AnnotationInfos { self: CompilerServices =>
 
   type AnnotationInfo <: AnyRef
 

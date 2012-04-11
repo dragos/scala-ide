@@ -2,7 +2,7 @@ package org.scalaide.api.model
 
 import scala.tools.nsc.interactive.Compatibility.PresentationTypes
 
-trait Types extends PresentationTypes { self: Universe =>
+trait Types extends PresentationTypes { self: CompilerServices =>
 
   /** Add operations to a compiler Type. */
   implicit def toTypeOps(tpe: Type): TypeOps

@@ -23,9 +23,15 @@ import scala.tools.eclipse.logging.HasLogger
 import scala.tools.nsc.util.FailedInterrupt
 import scala.tools.nsc.symtab.Flags
 import scala.tools.eclipse.completion.CompletionProposal
+import org.scalaide.internal.api.SdtCorePresentationCompiler
+import scala.tools.eclipse.contribution.weaving.jdt.IScalaCompilationUnit
+import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+import org.scalaide.api.model.CompilerServices
+import org.scalaide.internal.api._
 
 class ScalaPresentationCompiler(project : ScalaProject, settings : Settings)
   extends Global(settings, new ScalaPresentationCompiler.PresentationReporter, project.underlying.getName)
+  with CompilerServicesImpl
   with ScalaStructureBuilder 
   with ScalaIndexBuilder 
   with ScalaMatchLocator
@@ -39,6 +45,16 @@ class ScalaPresentationCompiler(project : ScalaProject, settings : Settings)
   def presentationReporter = reporter.asInstanceOf[ScalaPresentationCompiler.PresentationReporter]
   presentationReporter.compiler = this
   
+  
+  // methods coming from SdtCorePresentationCompiler
+  def withSourceFile[T](scu: IScalaCompilationUnit)(op: SourceFile => T): T = scu match {
+    case cu: ScalaCompilationUnit => withSourceFile(cu)((srcFile, comp) => op(srcFile))
+  }
+
+  def askReload(scu: IScalaCompilationUnit): Response[Unit] = scu match {
+    case cu: ScalaCompilationUnit => askReload(cu, cu.getContents)
+  }
+
   /** A map from compilation units to the BatchSourceFile that the compiler understands.
    * 
    *  This map is populated by having a default source file created when calling 'apply', 

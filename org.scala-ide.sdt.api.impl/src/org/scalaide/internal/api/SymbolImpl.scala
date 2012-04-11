@@ -1,9 +1,9 @@
 package org.scalaide.internal.api
 
-import org.scalaide.api.model.Universe
-import scala.tools.eclipse.ScalaPresentationCompiler
+import org.scalaide.api.model.CompilerServices
+import scala.tools.nsc.interactive.Global
 
-trait SymbolImpl extends Universe { self: ScalaPresentationCompiler =>
+trait SymbolImpl extends CompilerServices { self: SdtCorePresentationCompiler with Global =>
 
   // Symbol is a concrete class in Global, so no need to define an alias
 //  type Symbol = self.Symbol

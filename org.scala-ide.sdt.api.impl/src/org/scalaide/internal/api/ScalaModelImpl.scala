@@ -1,30 +1,33 @@
 package org.scalaide.internal.api
 
 import org.scalaide.api.model._
-import scala.tools.eclipse.ScalaPresentationCompiler
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+import scala.tools.eclipse.contribution.weaving.jdt.IScalaCompilationUnit
 import scala.tools.nsc.util.SourceFile
+import scala.tools.nsc.interactive.Global
 
-trait ScalaModelImpl extends ScalaModel { self: Universe with ScalaPresentationCompiler =>
+trait ScalaModelImpl extends ScalaModel { 
+  self: CompilerServices 
+   with SdtCorePresentationCompiler
+   with Global =>
 
   private val TIMEOUT = 5000
 
   private def ??? = sys.error("not implemented yet")
 
-  def withSource[A](scu: ScalaCompilationUnit)(op: SourceFile => A): A =
-    self.withSourceFile(scu)((srcFile, compiler) => op(srcFile))
+  def withSource[A](scu: IScalaCompilationUnit)(op: SourceFile => A): A =
+    self.withSourceFile(scu)(op)
 
   /** Reload the given compilation unit. If this CU is not tracked by the presentation
    *  compiler, it will from now on. Each type-checking pass will consider this source
    *  as well.
    */
-  def askReload(sources: ScalaCompilationUnit*): Unit =
-    sources foreach { scu => self.askReload(scu, scu.getContents) }
+  def askReload(sources: IScalaCompilationUnit*): Unit =
+    sources foreach { scu => self.askReload(scu) }
 
   /** Locate smallest tree that encloses position
    *  @pre Position must be loaded
    */
-  def locateTree(pos: Position): Tree = self.locateTree(pos)
+  def locate(pos: Position): Tree = self.locateTree(pos)
 
   /** Locate smallest tree that encloses position.
    *
@@ -40,7 +43,7 @@ trait ScalaModelImpl extends ScalaModel { self: Universe with ScalaPresentationC
   /** Return the AST of the given compilation unit. The operation may be long-running
    *  if you ask for the fully typed tree.
    */
-  def fullTreeOf(scu: ScalaCompilationUnit, ast: AstKind.Value = AstKind.Parsed): Either[Tree, Throwable] = {
+  def fullTreeOf(scu: IScalaCompilationUnit, ast: AstKind.Value = AstKind.Parsed): Either[Tree, Throwable] = {
     val response = new Response[Tree]
 
     ast match {
@@ -59,14 +62,13 @@ trait ScalaModelImpl extends ScalaModel { self: Universe with ScalaPresentationC
    *  @return A left-biased instance of Either. Exceptions are returned in the `Right` part.
    */
   def treeAt(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[Tree, Throwable] = {
-    val response = new Response[Tree]
-
     ast match {
       case AstKind.Parsed =>
         val tree = self.parseTree(pos.source)
         Left(locateIn(tree, pos))
 
       case AstKind.Named | AstKind.Typed =>
+        val response = new Response[Tree]
         self.askTypeAt(pos, response)
         response.get
     }
@@ -79,27 +81,64 @@ trait ScalaModelImpl extends ScalaModel { self: Universe with ScalaPresentationC
   def enclosingClass(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[ClassDef, Throwable] = {
     val eitherCdef = locateIn(parseTree(pos.source), pos, _.isInstanceOf[ClassDef]) match {
       case c: ClassDef => Left(c)
-      case EmptyTree   => Right(PositionNotFound(pos))
+      case EmptyTree   => Right(PositionNotFound(pos): Throwable)
     }
 
     ast match {
       case AstKind.Parsed => eitherCdef
       case AstKind.Named | AstKind.Typed =>
-        val response = new Response[Tree]
-        eitherCdef.left.map(cdef => self.askTypeAt(cdef.pos, response))
-        response.get.left.map(_.asInstanceOf[ClassDef])
+        for {
+          cdef <- eitherCdef.left
+          typedTree <- treeAt(cdef.pos, ast).left
+        } yield typedTree.asInstanceOf[ClassDef]
     }
   }
 
   /** Return the innermost enclosing method definition for the given position.
    *
-   *  @return A right-biased instance of Either. Exceptions are returned in the 'left' part.
+   *  @return A left-biased instance of Either. Exceptions are returned in the `Right` part.
    */
-  def enclosingMethod(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[DefDef, Throwable] = ???
+  def enclosingMethod(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[DefDef, Throwable] = {
+    val eitherDefDef = locateIn(parseTree(pos.source), pos, _.isInstanceOf[DefDef]) match {
+      case ddef: DefDef => Left(ddef)
+      case EmptyTree    => Right(PositionNotFound(pos): Throwable)
+    }
+
+    ast match {
+      case AstKind.Parsed => eitherDefDef
+      case AstKind.Named | AstKind.Typed =>
+        for {
+          ddef <- eitherDefDef.left
+          typedTree <- treeAt(ddef.pos, ast).left
+        } yield typedTree.asInstanceOf[DefDef]
+    }
+  }
 
   /** Return the top-level enclosing class for the given position.
    *
-   *  @return A right-biased instance of Either. Exceptions are returned in the 'left' part.
+   *  @return A left-biased instance of Either. Exceptions are returned in the `Right` part.
    */
-  def topLevelClass(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[ClassDef, Throwable] = ???
+  def topLevelClass(pos: Position, ast: AstKind.Value = AstKind.Parsed): Either[ClassDef, Throwable] = {
+    var keepLooking = true
+    def findTopLevelClass(t: Tree): Boolean =
+      if (keepLooking && t.isInstanceOf[ClassDef]) {
+        keepLooking = false
+        true
+      } else false
+
+    val eitherCdef = locateIn(parseTree(pos.source), pos, findTopLevelClass) match {
+      case cdef: ClassDef => Left(cdef)
+      case EmptyTree      => Right(PositionNotFound(pos): Throwable)
+    }
+
+    ast match {
+      case AstKind.Parsed => eitherCdef
+      case AstKind.Named | AstKind.Typed =>
+        for {
+          cdef <- eitherCdef.left
+          typedTree <- treeAt(cdef.pos, ast).left
+        } yield typedTree.asInstanceOf[ClassDef]
+    }
+  }
+
 }

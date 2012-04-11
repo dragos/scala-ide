@@ -29,6 +29,9 @@ import org.eclipse.ui.IEditorPart
 import org.eclipse.ui.IPartListener
 import org.eclipse.ui.IWorkbenchPart
 import org.eclipse.ui.part.FileEditorInput
+import org.scalaide.api.IScalaProject
+import org.eclipse.jface.preference.IPreferenceStore
+import org.scalaide.api.model.CompilerServices
 
 trait BuildSuccessListener {
   def buildSuccessful(): Unit
@@ -77,7 +80,7 @@ object ScalaProject {
   }
 }
 
-class ScalaProject private (val underlying: IProject) extends ClasspathManagement with HasLogger {
+class ScalaProject private (val underlying: IProject) extends ClasspathManagement with HasLogger with IScalaProject {
   import ScalaPlugin.plugin
 
   private var classpathUpdate: Long = IResource.NULL_STAMP
@@ -87,6 +90,31 @@ class ScalaProject private (val underlying: IProject) extends ClasspathManagemen
   private val buildListeners = new mutable.HashSet[BuildSuccessListener]
   
   private val worbenchPartListener: IPartListener = new ScalaProject.ProjectPartListener(this)
+  
+  // methods coming from IScalaProject
+  /** Return the preference store used by this project. If the project uses
+   *  project-specific settings it returns the corresponding store, otherwise
+   *  it returns the plugin-wide preference store.
+   */
+  def preferenceStore: IPreferenceStore = storage
+
+  /** The underlying platform project. */
+  def underlyingProject: IProject = underlying
+
+  /** The underlying Java project. */
+  def underlyingJavaProject: IJavaProject = javaProject
+  
+  /** Perform `op` in the current Scala compiler universe.
+   *
+   *  [[CompilerServices]] provides both types and methods to manipulate compiler
+   *  data structures. The presentation compiler running in the background
+   *  can restart at any time (for instance because of a clean build or a classpath
+   *  refresh), therefore __no values retrieved through `CompilerServices`
+   *  should be stored outside the scope of the services oject__.
+   */
+  def withCompilerServices[T](op: CompilerServices => T): T = {
+    withPresentationCompiler(op)()
+  }
 
   case class InvalidCompilerSettings() extends RuntimeException(
         "Scala compiler cannot initialize for project: " + underlying.getName +

@@ -4,8 +4,9 @@ import scala.tools.eclipse.ScalaPresentationCompiler
 import org.scalaide.api.model._
 
 object ModelImplTest extends ScalaPresentationCompiler(null, null)
-  with Universe
+  with CompilerServices
   with SymbolImpl
   with TypeImpl
   with ScalaModelImpl
   with AnnotationInfoImpl
+  with SymbolTableImpl

@@ -1,9 +1,10 @@
 package org.scalaide.internal.api
 
-import scala.tools.eclipse.ScalaPresentationCompiler
-import org.scalaide.api.model.Universe
+import org.scalaide.api.model.CompilerServices
+import scala.tools.nsc.interactive.Global
 
-trait AnnotationInfoImpl extends Universe { self: ScalaPresentationCompiler =>
+trait AnnotationInfoImpl extends CompilerServices { 
+  self: SdtCorePresentationCompiler with Global =>
 
   type AnnotationInfo = self.AnnotationInfo
 
