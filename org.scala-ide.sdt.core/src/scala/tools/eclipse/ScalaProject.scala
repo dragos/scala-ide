@@ -42,6 +42,7 @@ import java.io.InputStreamReader
 import scala.tools.eclipse.util.Trim
 import org.eclipse.jdt.launching.JavaRuntime
 import org.eclipse.jdt.internal.core.util.Util
+import scala.tools.eclipse.sbtconsole.SbtBuilder
 
 trait BuildSuccessListener {
   def buildSuccessful(): Unit
@@ -57,6 +58,7 @@ class ScalaProject private (val underlying: IProject) extends ClasspathManagemen
   private var classpathUpdate: Long = IResource.NULL_STAMP
   private var buildManager0: EclipseBuildManager = null
   private var hasBeenBuilt = false
+  val sbtConsole = new SbtBuilder(this)
   
   private val buildListeners = new mutable.HashSet[BuildSuccessListener]
 
@@ -605,6 +607,11 @@ class ScalaProject private (val underlying: IProject) extends ClasspathManagemen
   private def resetBuildCompiler() {
     buildManager0 = null
     hasBeenBuilt = false
+  }
+
+  def preClose() {
+    resetCompilers()
+    sbtConsole.dispose()
   }
 
   protected def resetCompilers(implicit monitor: IProgressMonitor = null) = {

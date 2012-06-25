@@ -29,7 +29,9 @@ object IDESettings {
              selfInAnnots, Yrecursion, refinementMethodDispatch,
              Ywarndeadcode, Ybuildmanagerdebug)),
       Box("Presentation Compiler",
-        List(YpresentationDebug, YpresentationVerbose, YpresentationLog, YpresentationReplay, YpresentationDelay)))
+        List(YpresentationDebug, YpresentationVerbose, YpresentationLog, YpresentationReplay, YpresentationDelay)),
+      Box("Sbt",
+        List(pathToSbt, sbtJavaArgs)))
   }
   
   def buildManagerSettings: List[Box] =
@@ -41,4 +43,8 @@ object ScalaPluginSettings extends Settings {
   val compileOrder = ChoiceSetting("-compileorder", "which", "Compilation order",
       List("Mixed", "JavaThenScala", "ScalaThenJava"), "Mixed")
   val stopBuildOnErrors = BooleanSetting("-stopBuildOnError", "Stop build if dependent projects have errors.")
+
+  // Sbt Settings
+  val pathToSbt    = StringSetting("-pathToSbt", "path", "The full path to sbt-launch.jar", "/usr/bin/sbt-launch.jar")
+  val sbtJavaArgs  = StringSetting("-sbtJavaArgs", "", "Additional JVM arguments", "-Xmx1000M")
 }

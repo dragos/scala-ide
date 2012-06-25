@@ -245,7 +245,16 @@
          tooltip="Open the Log file in an editor"
          class="scala.tools.eclipse.actions.RunDiagnosticAction"
          enablesFor="*">
-       </action>       
+       </action>
+       <action
+         class="scala.tools.eclipse.sbtconsole.ShowSbtConsoleAction"
+         enablesFor="*"
+         id="org.scala-ide.sdt.ui.runSbt"
+         label="Show Sbt Console"
+         menubarPath="project/additions"
+         style="toggle"
+         tooltip="Show the Sbt console for project">
+       </action>
      </actionSet>
    </extension>
 

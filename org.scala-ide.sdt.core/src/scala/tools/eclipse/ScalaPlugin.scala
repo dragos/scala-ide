@@ -248,7 +248,7 @@ class ScalaPlugin extends AbstractUIPlugin with PluginLogConfigurator with IReso
             case Some(scalaProject) =>
               projects.remove(project)
               logger.info("shutting down compilers for " + project.getName)
-              scalaProject.shutDownCompilers()
+              scalaProject.preClose()
             case None =>
           }
         }
