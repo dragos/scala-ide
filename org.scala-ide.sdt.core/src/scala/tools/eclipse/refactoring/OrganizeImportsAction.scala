@@ -241,11 +241,11 @@ class OrganizeImportsAction extends RefactoringAction with ActionWithNoWizard {
         
         val groups = getGroupsForProject(project).toList
         
-        val scalaPackageStrategy = if (shouldOmitScalaPackage(project)){
+        val scalaPackageStrategy =  null /*if (shouldOmitScalaPackage(project)){
           refactoring.DropScalaPackage
         } else {
           refactoring.PrependScalaPackage
-        }
+        }*/
         
         expandOrCollapse ::: List(scalaPackageStrategy, wildcards, refactoring.SortImports, refactoring.GroupImports(groups))
       }

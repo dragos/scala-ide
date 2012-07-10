@@ -73,7 +73,7 @@ abstract class MarkerFactory(markerType: String) {
     marker
   }
   
-  private def createMarkerInWorkspaceAndApply(resource: IResource)(f: IMarker => Unit): Unit = workspaceRunnableIn(resource.getWorkspace) { _ => 
+  private def createMarkerInWorkspaceAndApply(resource: IResource)(f: IMarker => Unit): Unit = { 
     val marker = resource.createMarker(markerType)
     f(marker)
   }

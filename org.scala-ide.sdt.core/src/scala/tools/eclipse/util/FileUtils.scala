@@ -55,14 +55,14 @@ object FileUtils {
   
   def clearBuildErrors(file : IFile, monitor : IProgressMonitor) =
     try {
-      workspaceRunnableIn(file.getWorkspace, monitor)( m => file.deleteMarkers(plugin.problemMarkerId, true, IResource.DEPTH_INFINITE))
+      withLockedResource(file, monitor)( m => file.deleteMarkers(plugin.problemMarkerId, true, IResource.DEPTH_INFINITE))
     } catch {
       case _ : ResourceException =>
     }
   
   def clearTasks(file : IFile, monitor : IProgressMonitor) =
     try {
-      workspaceRunnableIn(file.getWorkspace, monitor)(m => file.deleteMarkers(IJavaModelMarker.TASK_MARKER, true, IResource.DEPTH_INFINITE))
+      withLockedResource(file, monitor)(m => file.deleteMarkers(IJavaModelMarker.TASK_MARKER, true, IResource.DEPTH_INFINITE))
     } catch {
       case _ : ResourceException =>
     }
@@ -74,7 +74,7 @@ object FileUtils {
     file.findMarkers(plugin.problemMarkerId, true, IResource.DEPTH_INFINITE).exists(_.getAttribute(IMarker.SEVERITY) == IMarker.SEVERITY_ERROR)
 
   def task(file: IFile, tag: String, msg: String, priority: String, offset: Int, length: Int, line: Int, monitor: IProgressMonitor) =
-    workspaceRunnableIn(file.getWorkspace, monitor) { m =>
+    withLockedResource(file, monitor) { m =>
       val mrk = file.createMarker(IJavaModelMarker.TASK_MARKER)
       val values = new Array[AnyRef](taskMarkerAttributeNames.length)
 

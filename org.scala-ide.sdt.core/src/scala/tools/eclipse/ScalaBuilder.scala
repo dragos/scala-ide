@@ -15,6 +15,8 @@ import scala.tools.eclipse.javaelements.JDTUtils
 import scala.tools.eclipse.util.{ FileUtils, ReflectionUtils }
 import scala.tools.eclipse.logging.HasLogger
 import scala.tools.nsc.interactive.RefinedBuildManager
+import org.eclipse.core.runtime.jobs.ISchedulingRule
+import org.eclipse.core.runtime.jobs.MultiRule
 
 class ScalaBuilder extends IncrementalProjectBuilder with HasLogger {
   def plugin = ScalaPlugin.plugin
@@ -151,6 +153,12 @@ class ScalaBuilder extends IncrementalProjectBuilder with HasLogger {
   def ensureProject = {
     if (scalaJavaBuilder.getProject == null)
       scalaJavaBuilder.setProject0(getProject)
+  }
+  
+  override def getRule(kind: Int, args: java.util.Map[String, String]): ISchedulingRule = {
+//    val (srcFolders, _) = ScalaPlugin.plugin.asScalaProject(getProject).get.sourceOutputFolders.unzip
+//    MultiRule.combine(srcFolders.toArray)
+    getProject
   }
 }
 

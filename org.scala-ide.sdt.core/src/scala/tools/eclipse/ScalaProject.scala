@@ -13,7 +13,7 @@ import scala.tools.eclipse.javaelements.ScalaCompilationUnit
 import scala.tools.eclipse.logging.HasLogger
 import scala.tools.eclipse.properties.{CompilerSettings, IDESettings, PropertyStore}
 import scala.tools.eclipse.util.{Cached, EclipseResource, Trim, Utils}
-import scala.tools.eclipse.util.EclipseUtils.workspaceRunnableIn
+import scala.tools.eclipse.util.EclipseUtils.withLockedResource
 import scala.tools.eclipse.util.SWTUtils.asyncExec
 import scala.tools.nsc.{Settings, MissingRequirementError}
 import scala.tools.nsc.util.BatchSourceFile
@@ -122,7 +122,7 @@ class ScalaProject private (val underlying: IProject) extends ClasspathManagemen
   def hasScalaNature: Boolean = plugin.isScalaProject(underlying)
   
   private def settingsError(severity: Int, msg: String, monitor: IProgressMonitor): Unit =
-    workspaceRunnableIn(underlying.getWorkspace, monitor) { m =>
+    withLockedResource(underlying, monitor) { m =>
       val mrk = underlying.createMarker(plugin.settingProblemMarkerId)
       mrk.setAttribute(IMarker.SEVERITY, severity)
       mrk.setAttribute(IMarker.MESSAGE, msg)
@@ -130,7 +130,7 @@ class ScalaProject private (val underlying: IProject) extends ClasspathManagemen
 
   /** Deletes the build problem marker associated to {{{this}}} Scala project. */
   private def clearBuildProblemMarker(): Unit = 
-    workspaceRunnableIn(underlying.getWorkspace) { m =>
+    withLockedResource(underlying) { m =>
       underlying.deleteMarkers(plugin.problemMarkerId, true, IResource.DEPTH_ZERO)
     }
  
@@ -140,7 +140,7 @@ class ScalaProject private (val underlying: IProject) extends ClasspathManagemen
   }
 
   private def clearSettingsErrors(): Unit =
-    workspaceRunnableIn(underlying.getWorkspace) { m =>
+    withLockedResource(underlying) { m =>
       underlying.deleteMarkers(plugin.settingProblemMarkerId, true, IResource.DEPTH_ZERO)
     }
 

@@ -5,6 +5,7 @@ import sbt.{ScalaInstance, LoggerReporter, ClasspathOptions}
 import xsbti.{AnalysisCallback, Reporter, Logger, Controller}
 import xsbt.Log
 import scala.tools.eclipse.ScalaPlugin
+import scala.tools.nsc.io.AbstractFile
 
 
 object SettingsCleanup {
@@ -18,7 +19,7 @@ object SettingsCleanup {
 
     s1.processArguments(xs.toList, true)
     // Needs to preserve output directories
-    s.outputDirs.outputs.foreach(v => s1.outputDirs.add(v._1, v._2))
+    s.outputDirs.outputs.foreach(v => s1.outputDirs.add(AbstractFile.getFile(v._1.file), AbstractFile.getFile(v._2.file)))
     s1
   }
 }

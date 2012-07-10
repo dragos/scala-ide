@@ -29,6 +29,7 @@ import scala.tools.nsc.util.Position
 import scala.tools.nsc.util.SourceFile
 import scala.tools.nsc.interactive.RangePositions
 import scala.tools.nsc.util.RangePosition
+import scala.tools.eclipse.ScalaPlugin
 
 object EclipseUtils {
 
@@ -84,6 +85,20 @@ object EclipseUtils {
     }, monitor)
   }
 
+  /**
+   * Run the given function while locking the given resource
+   *
+   * @param resouce the resource that should be locked while `f` runs.
+   * @param monitor the progress monitor (defaults to null for no progress monitor).
+   */
+  def withLockedResource(resource: IResource, monitor: IProgressMonitor = null)(f: IProgressMonitor => Unit) = {
+    ResourcesPlugin.getWorkspace.run( new IWorkspaceRunnable {
+      def run(monitor: IProgressMonitor) {
+        f(monitor)
+      }
+    }, resource, IWorkspace.AVOID_UPDATE, monitor)
+  }
+  
   def computeSelectedResources(selection: IStructuredSelection): List[IResource] =
     IDE.computeSelectedResources(selection).toList.asInstanceOf[List[IResource]]
 
