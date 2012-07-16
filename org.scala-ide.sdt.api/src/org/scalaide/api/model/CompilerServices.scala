@@ -1,7 +1,5 @@
 package org.scalaide.api.model
 
-import scala.tools.nsc.interactive.Compatibility
-
 /**
  * The equivalent of Universe in the Scala compiler.
  * 
@@ -11,5 +9,5 @@ import scala.tools.nsc.interactive.Compatibility
 trait CompilerServices extends CompilerTypes
   with Symbols
   with Types
-  with AnnotationInfos
+//  with AnnotationInfos
   with SymbolTable

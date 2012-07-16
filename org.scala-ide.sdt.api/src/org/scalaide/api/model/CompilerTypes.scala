@@ -1,14 +1,16 @@
 package org.scalaide.api.model
 
-import scala.tools.nsc.interactive.Compatibility
+import scala.reflect.base.Universe
 
-trait CompilerTypes extends Compatibility.Positions
-  with Compatibility.PresentationSymbols
-  with Compatibility.PresentationTypes
-  with Compatibility.Names
-  with Compatibility.StandardNames
-  with Compatibility.Constants
-  with Compatibility.Scopes // used by Type extractors
-  with Compatibility.PresentationStandardDefinitions
-  with Compatibility.TreePrinters
-  with Compatibility.Trees
+trait CompilerTypes extends Universe
+
+//  Positions
+//  with reflect.api.Symbols
+//  with reflect.api.Types
+//  with Names
+//  with StandardNames
+//  with Constants
+//  with scala.reflect.base.Scopes // used by Type extractors
+//  with StandardDefinitions
+//  with Printers
+//  with Trees

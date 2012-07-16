@@ -1,9 +1,8 @@
 package org.scalaide.api.model
 
-import scala.tools.nsc.interactive.Compatibility.PresentationSymbols
-import scala.tools.nsc.interactive.Compatibility
+import scala.reflect.base
 
-trait Symbols extends PresentationSymbols { self: Compatibility.Names with Types with AnnotationInfos =>
+trait Symbols extends CompilerTypes { self =>
 
   /** Symbols are completely abstracted away in the Scala model API. All operations
    *  on symbols are performed through `SymbolOps`, whose implementation takes care of
