@@ -14,7 +14,7 @@ case class BuildProblem(severity: Reporter#Severity, msg: String, pos: Position)
 
 abstract class BuildReporter(private[buildmanager] val project0: ScalaProject, settings0: Settings) extends Reporter with HasLogger {
   val buildManager: EclipseBuildManager
-  val prob: ListBuffer[BuildProblem] = ListBuffer.empty
+  private val prob: ListBuffer[BuildProblem] = ListBuffer.empty
 
   val taskScanner = new TaskScanner(project0)
   

@@ -26,6 +26,7 @@ class CompilationUnitAdapter(classFile : ScalaClassFile) extends Openable(classF
   override def equals(o : Any) = classFile.equals(o)
   override def hashCode() = classFile.hashCode()
   
+  def ignoreOptionalProblems() = false
   def getFileName() : Array[Char] = classFile.getFileName()
   def getContents() : Array[Char] = classFile.getContents()
   def getMainTypeName() : Array[Char] = classFile.getMainTypeName()

@@ -91,9 +91,10 @@ class ScalaSourceFile(fragment : PackageFragment, elementName: String, workingCo
     reconcileFlags : Int,
     problems : JHashMap[_,_],
     monitor : IProgressMonitor) : org.eclipse.jdt.core.dom.CompilationUnit = {
-    val info = createElementInfo.asInstanceOf[OpenableElementInfo]
-    openWhenClosed(info, monitor)
-    null
+    super.makeConsistent(ICompilationUnit.NO_AST, false/*don't resolve bindings*/, 0 /* don't perform statements recovery */, null/*don't collect problems but report them*/, monitor);
+//    val info = createElementInfo.asInstanceOf[OpenableElementInfo]
+//    openWhenClosed(info, monitor)
+//    null
   }
 
   override def codeSelect(offset : Int, length : Int, workingCopyOwner : WorkingCopyOwner) : Array[IJavaElement] =
