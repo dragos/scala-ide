@@ -11,6 +11,23 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import scala.tools.eclipse.javaelements.ScalaSourceFile
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import java.util.ArrayList
+import java.util.Collection
+
+@RunWith(classOf[Parameterized])
+object JUnit4TestFinderTest {
+  @Parameterized.Parameters
+  def generateParams(): Collection[Array[Object]] = {
+    val params = new ArrayList[Array[Object]]()
+    println("Generating params")
+    for (i <- 1 to 100)
+      params.add(Array[Object](new Integer(i)))
+
+    params
+  }
+}
 
 /** This class checks the functionality behind Run As > JUnit Test, triggered when a user right clicks on a source
   * file in the package explorer and hovers on "Run As". If the source file contains any runnable JUnit4 test class,
@@ -19,7 +36,8 @@ import scala.tools.eclipse.javaelements.ScalaSourceFile
   * Mind that the tests in this class don't actually check the UI functionality, but only the underlying logic.
   * Furthermore, right clicking on a source or on a package (or a project) it's not the same.
   */
-class JUnit4TestFinderTest {
+@RunWith(classOf[Parameterized])
+class JUnit4TestFinderTest(n: Int) {
 
   private final val TestProjectName = "runAsJunit"
 

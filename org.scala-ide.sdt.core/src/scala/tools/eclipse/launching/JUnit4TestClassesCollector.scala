@@ -27,6 +27,7 @@ private[launching] abstract class JUnit4TestClassesCollector extends HasLogger {
   def collect(tree: Tree): List[ClassDef] = {
     val collector = new JUnit4TestClassesTraverser
     collector.traverse(tree)
+    logger.debug(s"[JUnit4TestFinder] collected ${collector.hits.toList}")
     collector.hits.toList
   }
 
@@ -47,6 +48,11 @@ private[launching] abstract class JUnit4TestClassesCollector extends HasLogger {
     private def isTopLevelClass(cdef: ClassDef): Boolean = {
       def isConcreteClass: Boolean = {
         val csym = cdef.symbol
+        logger.debug(s"""[JUnit4TestFinder.itTopLevelClass] ${cdef.symbol}
+            clazz: ${csym.isClass}
+            abstract: ${csym.isAbstractClass}
+            trait: ${csym.isTrait}
+            owner isPack: ${csym.owner.isPackageClass}""")
         // Abstract classes cannot be run by definition, so they should be ignored.
         // And trait do have the `isClass` member set to `true`, so we need to check `isTrait` as well.
         csym.isClass && !csym.isAbstractClass && !csym.isTrait
@@ -61,7 +67,13 @@ private[launching] abstract class JUnit4TestClassesCollector extends HasLogger {
     }
 
     private def hasJUnitTestMethod(cdef: ClassDef): Boolean = TestAnnotationOpt exists { ta =>
-      cdef.symbol.info.members.exists { hasAnnotation(_, ta) }
+      val res = cdef.symbol.info.members.exists { hasAnnotation(_, ta) }
+      if (!res) {
+        logger.debug(s"""[JUnit4TestFinder.hasJUnitTestMethod] ${cdef.symbol}
+            members: ${cdef.symbol.info.members.map(m => Tuple2(m, m.annotationsString))}
+        """)
+      }
+      res
     }
 
     private def hasAnnotation(member: Symbol, ann: Symbol): Boolean = {

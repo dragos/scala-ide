@@ -56,7 +56,7 @@ class EclipseUserSimulator {
 
   def createCompilationUnit(pack: IPackageFragment, name: String, sourceCode: String) = {
     val cu = pack.createCompilationUnit(name, sourceCode, false, null)
-    Thread.sleep(200)
+//    Thread.sleep(200)
     cu
   }
 

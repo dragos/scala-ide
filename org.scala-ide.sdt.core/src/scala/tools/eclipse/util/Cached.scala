@@ -42,7 +42,8 @@ trait Cached[T] {
   }
 
   /** Is the cached object initialized, at this point in time? */
-  def initialized: Boolean = synchronized { elem.isDefined }
+//  def initialized: Boolean = synchronized { elem.isDefined }
+  def initialized: Boolean = elem.isDefined
 
   def invalidate() {
     val oldElem = synchronized {

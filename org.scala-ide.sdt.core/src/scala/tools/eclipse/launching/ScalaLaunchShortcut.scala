@@ -28,6 +28,7 @@ import scala.tools.eclipse.javaelements.ScalaSourceFile
 import scala.tools.eclipse.util.EclipseUtils._
 import scala.tools.eclipse.javaelements.ScalaJavaMapper
 import scala.tools.nsc.MissingRequirementError
+import scala.tools.eclipse.logging.HasLogger
 
 /* This class can be eliminated in favour of JavaApplicationLaunch shortcut as soon as
  * the JDTs method search works correctly for Scala.
@@ -161,14 +162,14 @@ class ScalaLaunchShortcut extends JavaLaunchShortcut {
     LauncherMessages.JavaApplicationLaunchShortcut_0
 }
 
-object ScalaLaunchShortcut {
+object ScalaLaunchShortcut extends HasLogger {
 
   /** Return all classes that contain @Test methods. */
   def getJunitTestClasses(element: AnyRef): List[IType] = {
     val je = element.asInstanceOf[IAdaptable].getAdapter(classOf[IJavaElement]).asInstanceOf[IJavaElement]
     je.getOpenable match {
       case scu: ScalaSourceFile => JUnit4TestFinder.findTestClasses(scu)
-      case _                    => Nil
+      case _                    => logger.debug(s"[JUnit4TestFinder] no ScalaSourceFile for $je"); Nil
     }
   }
 
