@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Introduction to Scala using the Worksheet">
+   <intro>
+      <description>
+         This tutorial will introduce you to the Scala language using the <b>worksheet</b>. A worksheet is a Scala file in which each line is evaluated on save, and the result is displayed to the right of the corresponding expression.
+       </description>
+   </intro>
+   <item
+         title="Open the Scala perspective">
+      <description>
+          Let&apos;s start by switching to the Scala perspective. This brings in all the Scala-related views and menus.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.perspectives.showPerspective(org.eclipse.ui.perspectives.showPerspective.perspectiveId=org.scala-ide.sdt.core.perspective)"/>
+   </item>
+   <item
+         title="Create a Scala project">
+     <description>
+         Next, let&apos;s ceate a Scala project. A Scala project holds together related source files, configuration (like classpath and compiler settings).
+A worksheet always belongs to a project, and inherits the project settings.
+     </description>
+     <command
+           required="false"
+           serialization="org.eclipse.ui.newWizard(newWizardId=org.scala-ide.sdt.core.wizards.newProject)"/>
+   </item>
+   <item
+         title="Create a worksheet">
+      <description>
+         Let&apos;s create a worksheet file. By default, the worksheet contains a simple greeting.
+       </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.newWizard(newWizardId=org.scalaide.worksheet.wizards.newWorksheet)"/>
+   </item>
+   <item
+         title="Try out some Scala expressions">
+      <description>
+         Start typing inside the given object. Notice that the editor highlights errors as you type, and supports content assist and hyperlinking to definitions.<br/><br/>
+Try the following:<br/><br/>
+<b>&quot;Hello, Scala&quot;.map(_.toUpperCase)</b>
+<br/><br/>
+then hit Save (<b>Ctrl-S</b>)
+      </description>
+   </item>
+</cheatsheet>

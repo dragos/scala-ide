@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Introduction to Scala">
+   <intro>
+      <description>
+         This tutorial will get you started with using <b>Scala</b> in the Eclipse IDE.<br/><br/>
+You will learn how to create a new Scala application, and how to run and debug it.
+      </description>
+   </intro>
+   <item
+         title="Switch to the Scala perspective">
+      <description>
+         Let&apos;s start by switching to the <b>Scala perspective</b>. This brings in all the Scala-related views and menus.
+     </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.perspectives.showPerspective(org.eclipse.ui.perspectives.showPerspective.perspectiveId=org.scala-ide.sdt.core.perspective)"/>
+   </item>
+   <item
+         title="Create a Scala project">
+      <description>
+         Next, let&apos;s ceate a Scala project. A Scala project holds together related source files and configuration (like classpath and compiler settings).
+<br/><br/>
+Everything you do in Eclipse is based on a project.
+<br/><br/>
+Click below to create a project. Choose a name and click <b>Finish</b>.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.newWizard(newWizardId=org.scala-ide.sdt.core.wizards.newProject)"/>
+   </item>
+   <item
+         skip="false"
+         title="Create a Scala object">
+      <description>
+         Let&apos;s start by creating a Scala object that extends <b>App</b>.
+<br/><br/>
+Unlike Java, Scala has top-level <b>objects</b>. A top-level object is a singleton, and it is initialized on first access. By making an object extend <b>App</b>, we make it <b>runnable</b>: everything inside the object will be executed.
+<br/><br/>
+Right click on the project and select <b>New Scala Object</b>.
+Make sure to choose the source folder in the project you just created. Also, enter a name for the object, like <b>Main</b> and a <b>package</b> name. The corresponding folders will be created for you.
+<br/><br/>
+<b>Using the default (empty) package is strongly discouraged.</b>
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.newWizard(newWizardId=org.scala-ide.sdt.core.wizards.newObject)"/>
+   </item>
+   <item
+         title="Run a Scala program">
+      <description>
+         Let&apos;s add some code and run the program.<br/><br/>
+<b>println(&quot;Hello, world&quot;)</b>
+<br/><br/>
+Now right click and choose <b>Run As &gt; Scala Application</b>. You should see the output in the <b>Console</b> window.
+      </description>
+   </item>
+</cheatsheet>

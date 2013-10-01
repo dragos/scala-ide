@@ -1507,4 +1507,38 @@
          <!-- END : do we need these? -->
     </kind>
  </extension>
+ <extension
+       point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+    <category
+          id="org.scala-ide.sdt.core.cheatSheets"
+          name="Scala">
+    </category>
+    <cheatsheet
+          category="org.scala-ide.sdt.core.cheatSheets"
+          composite="false"
+          contentFile="intro/intro_worksheet.xml"
+          id="org.scala-ide.sdt.core.cheatsheet_worksheet"
+          name="Introduction to Scala using the Worksheet">
+       <description>
+          Introduction to Scala
+       </description>
+    </cheatsheet>
+    <cheatsheet
+          category="org.scala-ide.sdt.core.cheatSheets"
+          composite="false"
+          contentFile="intro/intro_scala.xml"
+          id="org.scala-ide.sdt.core.cheatsheet_scala_app"
+          name="Introduction to Scala">
+       <description>
+          Write and run your first Scala program
+       </description>
+    </cheatsheet>
+ </extension>
+ <extension
+       point="org.eclipse.ui.intro.configExtension">
+    <configExtension
+          configId="org.eclipse.ui.intro.universalConfig"
+          content="intro/welcome.xml">
+    </configExtension>
+ </extension>
 </plugin>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+
+   <page id="org.scala-ide.sdt.ui.intro"
+	 style="$theme$/html/overview.css"
+         style-id="page">
+     <title style-id="intro-header">Welcome to Scala IDE</title>
+     <include path="overview/navigation-links"/>
+     <group id="page-content">
+       <group style-id="content-group"
+	      id="scalaide"
+	      label="Scala IDE">
+	 
+	 <link style-id="content-link"
+	       label="New Scala Project"
+	       url="http://org.eclipse.ui.intro/runAction?class=scala.tools.eclipse.wizards.ScalaProjectWizard&amp;pluginId=org.scala-ide.sdt.core&amp;standby=true"
+	       id="newproject">
+	   <text>Create a new Scala project</text>
+	 </link>
+	 
+	 <link style-id="content-link" 
+	       label="Hello World with Scala" 
+	       id="hellocheat"
+	       url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.scala-ide.sdt.core.cheatsheet_scala_app">
+	   <text>Write and run a Hello World program in Scala</text>
+	 </link>
+       </group>
+     </group>
+   </page>
+
+   <extensionContent id="orgscalaidesdtcore-introExtension" 
+		     style="css/intro.css" 
+		     name="Scala IDE" 
+		     path="overview/@">
+     <group style-id="content-group" id="orgscalaidesdtcore-introLink-group">
+       <link label="Get started with Scala" url="http://org.eclipse.ui.intro/showPage?id=org.scala-ide.sdt.ui.intro" id="orgscalaidesdtcore-introLink" style-id="content-link">
+	 <text>The best way to get started with Scala is to take one of the tutorials.</text>
+       </link>
+     </group>
+   </extensionContent>
+
+   <extensionContent 
+       id="org.scala-ide.sdt.core.tutorials" 
+       name="Scala IDE" 
+       style="overview.css"
+       path="tutorials/@">
+   <group style-id="content-group"
+          id="scalaide"
+          label="Scala IDE">
+    <link style-id="content-link" 
+         label="Hello World with Scala" 
+         id="hellocheat"
+         url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.scala-ide.sdt.core.cheatsheet_scala_app">
+           <text>Write and run a Hello World program in Scala</text>
+    </link>
+   </group>
+   </extensionContent>
+</introContent>
