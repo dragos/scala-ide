@@ -43,10 +43,12 @@ object ScalaDebugger {
           case scalaStackFrame: ScalaStackFrame =>
             scalaStackFrame.thread
           case _ =>
-            null
+            println(s"Don't know the current selection $selection")
+            _currentThread
         }
       case _ =>
-        null
+        println(s"Don't know the current selection $selection")
+        _currentThread
     }
   }
 
