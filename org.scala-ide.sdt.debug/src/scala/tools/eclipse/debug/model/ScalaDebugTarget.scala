@@ -374,6 +374,8 @@ abstract class ScalaDebugTarget private (val virtualMachine: VirtualMachine, lau
    */
   private[model] def getScalaThreads: List[ScalaThread] = threads
   
+  def getScalaThread(threadRef: ThreadReference) =
+    threads.find(_.threadRef == threadRef)
 }
 
 private[model] object ScalaDebugTargetActor {
