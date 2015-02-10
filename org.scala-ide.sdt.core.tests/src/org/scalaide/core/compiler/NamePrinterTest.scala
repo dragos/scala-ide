@@ -507,6 +507,7 @@ class NamePrinterTest {
     val cu = mkScalaCompilationUnit(source)
     val offset = verifyOffset(source.indexOf("/**/") - 1)
     val namePrinter = new NamePrinter(cu)
+    cu.initialReconcile()
     val res = namePrinter.qualifiedNameAt(offset)
     assertEquals(expected, res)
   }

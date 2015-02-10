@@ -21,9 +21,12 @@ class NamePrinter(cu: InteractiveCompilationUnit) extends HasLogger {
   /**
    * Returns the fully qualified name of the symbol at the given offset if available.
    *
-   * This method is used by "Copy Qualified Name" in the GUI. Please note that there is no formal
+   * This method is used by 'Copy Qualified Name' in the GUI. Please note that there is no formal
    * specification of the names this feature should return. The behavior of the implementation is mostly modeled
    * after the corresponding JDT feature.
+   *
+   * @note Important: This method assumes the `cu` is already loaded in the presentation compiler (for example,
+   *                  `cu.initialReconcile` was called on it). If the unit is not loaded, this might fail spuriously.
    */
   def qualifiedNameAt(offset: Int): Option[String] = {
     cu.withSourceFile { (src, compiler) =>
@@ -113,7 +116,6 @@ class NamePrinter(cu: InteractiveCompilationUnit) extends HasLogger {
     def tparamStr(sym: comp.Symbol) = {
       shortName(sym.name)
     }
-
 
     def declPrinterTypeStr(tpe: comp.Type) = {
       new DeclarationPrinter {
